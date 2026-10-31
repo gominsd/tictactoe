@@ -59,7 +59,13 @@ body {
   min-height: 100vh;   /* fallback for browsers without dvh support */
   min-height: 100dvh;  /* accounts for mobile browser chrome (address bar) */
   display: flex;
-  align-items: center;
+  align-items: center;       /* fallback for browsers without `safe` keyword support */
+  align-items: safe center;  /* on mobile the page is taller than the screen — plain
+                                 `center` pushes the TOP of it above y=0, which can't be
+                                 scrolled back into view (this was cutting off the board).
+                                 `safe` falls back to start-alignment whenever centering
+                                 would make content inaccessible; a no-op on desktop,
+                                 where everything already fits the viewport. */
   justify-content: center;
   padding-block: var(--space-xl);
   padding-inline: var(--space-lg);
@@ -356,6 +362,10 @@ body {
 }
 
 /* ---------- Record Table ---------- */
+.record-table-wrap {
+  width: 100%;
+}
+
 .record-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -649,26 +659,56 @@ body {
   cursor: not-allowed;
 }
 
+/* PC/tablet (anything above the mobile breakpoint below): shrink the whole
+   page to 70% of its current rendered size. `zoom` scales layout, text and
+   backgrounds together (unlike `transform`, which would leave dead space),
+   and is applied on `html` so nothing mismatches at the edges. */
+@media (min-width: 801px) {
+  html {
+    zoom: 0.7;
+  }
+}
+
 /* ---------- Responsive ----------
    Sizing itself is fluid now (clamp()-based html font-size, .cell, .modal),
    so these breakpoints only handle structural changes: switching the board
    and record table from a side-by-side row to a stacked column, and a couple
-   of spacing tweaks for very small phones. Desktop (>1200px) is untouched. */
+   of spacing tweaks for very small phones. Desktop (>1200px) is untouched
+   apart from the 70% zoom above. */
 @media (max-width: 800px) {
   .game-area {
     flex-direction: column;
     align-items: center;
   }
 
+  .board-container {
+    gap: var(--space-sm);
+  }
+
   .record-container {
     min-width: unset;
     width: 100%;
     max-width: 420px;
+    gap: var(--space-md);
+  }
+
+  /* The record table always lists all 9 rounds (mostly empty early on).
+     On mobile that pushes the game board far down the page, so cap it to
+     a short, independently-scrolling panel instead of growing forever. */
+  .record-table-wrap {
+    max-height: 190px;
+    overflow-y: auto;
+    border-radius: 24px;
+    box-shadow: 0 8px 28px var(--shadow);
+  }
+
+  .record-table {
+    box-shadow: none;
   }
 
   .record-table th,
   .record-table td {
-    padding: 14px 16px;
+    padding: 10px 16px;
   }
 
   .score-board {
@@ -694,8 +734,11 @@ body {
   }
 }
 
-/* Short landscape phones — reduce vertical bulk so nothing needs to scroll
-   under the browser chrome. */
+/* Short landscape phones — the base .cell size only scales off viewport
+   WIDTH (26vw), which is fine in portrait but badly oversized once height
+   is the scarce dimension: at 844x390 landscape it computed to a ~670px
+   tall board inside a 390px-tall screen. Switch to a height-driven size
+   here instead, and trim the surrounding chrome so the board fits. */
 @media (max-height: 500px) and (orientation: landscape) {
   body {
     padding-block: var(--space-md);
@@ -705,11 +748,25 @@ body {
     gap: var(--space-md);
   }
 
+  .game-area {
+    gap: var(--space-md);
+  }
+
   .board-container {
     gap: var(--space-sm);
   }
 
+  .cell {
+    width: clamp(48px, 18vh, 280px);
+    height: clamp(48px, 18vh, 280px);
+  }
+
   .game-title {
     font-size: clamp(1.4rem, 5vw, 2.2rem);
+  }
+
+  .record-table-wrap {
+    max-height: 120px;
+    overflow-y: auto;
   }
 }
