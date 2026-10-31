@@ -1,5 +1,5 @@
 /* =========================================
-   ?�택???�????Style Sheet
+   ?�택???�????Style Sheet
    Design: Sky-blue checkerboard theme
    ========================================= */
 
@@ -25,32 +25,49 @@
   --sky-dark:  #4DB8E8;
   --sky-deep:  #2196C8;
   --white:     #FFFFFF;
-  --cell-odd:  #ADE3FA;   /* ?�늘???� */
-  --cell-even: #FFFFFF;   /* ?�색 ?�   */
+  --cell-odd:  #ADE3FA;   /* ?�늘???� */
+  --cell-even: #FFFFFF;   /* ?�색 ?�   */
   --border:    #ADE3FA;
   --text-dark: #1A6A96;
   --text-mid:  #3A99CC;
   --shadow:    rgba(135, 216, 245, 0.45);
-  --p1-color:  #2196C8;   /* ?�돌(?�레?�어 1) UI 강조??*/
-  --p2-color:  #E85858;   /* 백돌(?�레?�어 2) UI 강조??*/
+  --p1-color:  #2196C8;   /* ?�돌(?�레?�어 1) UI 강조??*/
+  --p2-color:  #E85858;   /* 백돌(?�레?�어 2) UI 강조??*/
+
+  /* Fluid spacing tokens — max value matches the original desktop px exactly,
+     so PC layout is unchanged; they only shrink on narrower viewports. */
+  --space-xl: clamp(20px, 5vw, 48px);
+  --space-lg: clamp(14px, 3.5vw, 32px);
+  --space-md: clamp(10px, 2.5vw, 24px);
+  --space-sm: clamp(6px, 1.8vw, 16px);
 }
 
 html {
-  font-size: 200%;
+  /* Fluid root size: 32px (=200%, original desktop value) down to 18px on
+     narrow phones, instead of the old fixed 200%/150%/120% step function. */
+  font-size: clamp(18px, 12px + 1.67vw, 32px);
 }
 
 html, body {
   height: 100%;
+  overflow-x: hidden; /* safety net: never allow horizontal scroll */
 }
 
 body {
   font-family: 'BithumbGothicOriginal', sans-serif;
   background: linear-gradient(135deg, #E0F5FD 0%, #F5FBFF 50%, #D6EFFE 100%);
-  min-height: 100vh;
+  min-height: 100vh;   /* fallback for browsers without dvh support */
+  min-height: 100dvh;  /* accounts for mobile browser chrome (address bar) */
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 48px 32px;
+  padding-block: var(--space-xl);
+  padding-inline: var(--space-lg);
+  /* Keep content clear of notches / home indicator bars */
+  padding-top: calc(var(--space-xl) + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(var(--space-xl) + env(safe-area-inset-bottom, 0px));
+  padding-left: calc(var(--space-lg) + env(safe-area-inset-left, 0px));
+  padding-right: calc(var(--space-lg) + env(safe-area-inset-right, 0px));
 }
 
 /* ---------- Page Wrapper ---------- */
@@ -58,7 +75,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 48px;
+  gap: var(--space-xl);
   width: 100%;
   max-width: 1640px;
 }
@@ -69,7 +86,7 @@ body {
   font-size: clamp(2rem, 6vw, 3.6rem);
   color: var(--white);
   letter-spacing: 4px;
-  /* ?��?지처럼 ?��? ?�두�?글??*/
+  /* ?��?지처럼 ?��? ?�두�?글??*/
   -webkit-text-stroke: 6px var(--sky-deep);
   paint-order: stroke fill;
   text-shadow:
@@ -86,11 +103,12 @@ body {
 /* ---------- Game Area Layout ---------- */
 .game-area {
   display: flex;
-  gap: 48px;
+  gap: var(--space-xl);
   align-items: flex-start;
   width: 100%;
   justify-content: center;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* board/record stack automatically when a row won't fit —
+                       this is what keeps landscape phones from overflowing */
 }
 
 /* ---------- Board Container ---------- */
@@ -106,9 +124,11 @@ body {
   background: var(--sky);
   border: 6px solid var(--sky-dark);
   border-radius: 100px;
-  padding: 16px 56px;
+  padding: clamp(10px, 2.5vw, 16px) clamp(18px, 6vw, 56px);
+  max-width: 100%;
+  text-align: center;
   font-family: 'BithumbGothicOriginal', sans-serif;
-  font-size: 1.1rem;
+  font-size: clamp(0.8rem, 2.6vw, 1.1rem);
   color: var(--white);
   -webkit-text-stroke: 2px var(--sky-deep);
   paint-order: stroke fill;
@@ -131,7 +151,8 @@ body {
 /* ---------- Stone Stock (remaining count) ---------- */
 .stock-row {
   display: flex;
-  gap: 36px;
+  gap: var(--space-md);
+  flex-wrap: wrap; /* stacks the two pills on very narrow phones instead of overflowing */
   align-items: center;
   justify-content: center;
 }
@@ -139,11 +160,11 @@ body {
 .stock {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(8px, 2vw, 12px);
   background: var(--white);
   border: 4px solid var(--sky-light);
   border-radius: 999px;
-  padding: 10px 24px;
+  padding: clamp(6px, 2vw, 10px) clamp(14px, 4vw, 24px);
 }
 
 .stock-icon {
@@ -152,12 +173,12 @@ body {
 
 .stock-dots {
   display: flex;
-  gap: 8px;
+  gap: clamp(4px, 1.5vw, 8px);
 }
 
 .stock-dot {
-  width: 26px;
-  height: 26px;
+  width: clamp(16px, 5vw, 26px);
+  height: clamp(16px, 5vw, 26px);
   border-radius: 50%;
   transition: opacity 0.2s, transform 0.2s;
 }
@@ -199,11 +220,16 @@ body {
 
 /* Checkerboard cells */
 .cell {
-  width: 280px;
-  height: 280px;
+  /* Fluid cell size: scales continuously with viewport width instead of the
+     old 280px/200px/120px step function, and never gets small enough to
+     overflow a 360px-wide phone (3 cells + border comfortably fit). The
+     280px ceiling matches the original desktop size exactly. */
+  width: clamp(84px, 26vw, 280px);
+  height: clamp(84px, 26vw, 280px);
   border: none;
   outline: none;
   cursor: pointer;
+  touch-action: manipulation;
   font-size: 3.2rem;
   font-family: 'BithumbGothicOriginal', sans-serif;
   display: flex;
@@ -214,7 +240,7 @@ body {
   user-select: none;
 }
 
-/* Checkerboard: index 0,2,4,6,8 ???�늘?? 1,3,5,7 ???�색 */
+/* Checkerboard: index 0,2,4,6,8 ???�늘?? 1,3,5,7 ???�색 */
 .cell:nth-child(odd)  { background: var(--cell-odd);  }
 .cell:nth-child(even) { background: var(--cell-even); }
 
@@ -281,16 +307,20 @@ body {
 /* ---------- Board Controls ---------- */
 .board-controls {
   display: flex;
-  gap: 24px;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .btn-reset, .btn-new-round {
-  padding: 20px 44px;
+  padding: clamp(10px, 2.5vw, 20px) clamp(18px, 5vw, 44px);
+  min-height: 44px; /* touch target */
   border-radius: 100px;
   border: 5px solid var(--sky-dark);
   font-family: 'BithumbGothicOriginal', sans-serif;
   font-size: 0.95rem;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
   box-shadow: 0 8px 20px var(--shadow);
 }
@@ -459,11 +489,13 @@ body {
   background: var(--white);
   border: 6px solid var(--sky-dark);
   border-radius: 48px;
-  padding: 80px 96px;
+  padding: clamp(28px, 7vw, 80px) clamp(20px, 7vw, 96px);
   text-align: center;
   box-shadow: 0 40px 120px rgba(33, 150, 200, 0.35);
   animation: modalPop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  min-width: 600px;
+  width: min(600px, 92vw);
+  max-height: calc(100dvh - 2 * var(--space-lg));
+  overflow-y: auto;
 }
 
 @keyframes modalPop {
@@ -497,17 +529,20 @@ body {
 
 .modal-actions {
   display: flex;
-  gap: 28px;
+  gap: var(--space-md);
+  flex-wrap: wrap;
   justify-content: center;
 }
 
 .btn-modal-reset, .btn-modal-next {
-  padding: 22px 52px;
+  padding: clamp(12px, 3.5vw, 22px) clamp(20px, 6vw, 52px);
+  min-height: 44px;
   border-radius: 100px;
   border: 5px solid var(--sky-dark);
   font-family: 'BithumbGothicOriginal', sans-serif;
   font-size: 1rem;
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.15s, box-shadow 0.15s, filter 0.15s;
   box-shadow: 0 8px 20px var(--shadow);
 }
@@ -532,7 +567,7 @@ body {
 
 /* ---------- Character Setup Modal ---------- */
 .setup-modal {
-  max-width: 760px;
+  width: min(760px, 92vw);
 }
 
 .setup-sub {
@@ -556,6 +591,7 @@ body {
   background: var(--white);
   padding: 20px 8px;
   cursor: pointer;
+  touch-action: manipulation;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -586,8 +622,9 @@ body {
 }
 
 .btn-setup-start {
-  margin-top: 36px;
-  padding: 24px 60px;
+  margin-top: var(--space-xl);
+  padding: clamp(14px, 3.5vw, 24px) clamp(24px, 7vw, 60px);
+  min-height: 44px;
   border-radius: 100px;
   border: none;
   background: var(--sky-dark);
@@ -597,6 +634,7 @@ body {
   -webkit-text-stroke: 1px var(--sky-deep);
   paint-order: stroke fill;
   cursor: pointer;
+  touch-action: manipulation;
   box-shadow: 0 8px 28px var(--shadow);
   transition: transform 0.15s, box-shadow 0.15s, filter 0.15s, opacity 0.15s;
 }
@@ -611,32 +649,12 @@ body {
   cursor: not-allowed;
 }
 
-/* ---------- Responsive ---------- */
-@media (max-width: 1200px) {
-  html { font-size: 150%; }
-
-  .cell {
-    width: 200px;
-    height: 200px;
-  }
-
-  .modal {
-    min-width: unset;
-    width: 90vw;
-    padding: 60px 48px;
-  }
-
-  .setup-modal { max-width: 90vw; }
-}
-
+/* ---------- Responsive ----------
+   Sizing itself is fluid now (clamp()-based html font-size, .cell, .modal),
+   so these breakpoints only handle structural changes: switching the board
+   and record table from a side-by-side row to a stacked column, and a couple
+   of spacing tweaks for very small phones. Desktop (>1200px) is untouched. */
 @media (max-width: 800px) {
-  html { font-size: 120%; }
-
-  .cell {
-    width: 120px;
-    height: 120px;
-  }
-
   .game-area {
     flex-direction: column;
     align-items: center;
@@ -648,9 +666,50 @@ body {
     max-width: 420px;
   }
 
+  .record-table th,
+  .record-table td {
+    padding: 14px 16px;
+  }
+
+  .score-board {
+    padding: var(--space-md) var(--space-lg);
+    gap: var(--space-md);
+  }
+}
+
+/* Small phones (iPhone SE/mini, small Android) — tighten the character
+   picker so 4 buttons per row don't get too cramped. */
+@media (max-width: 420px) {
+  .char-row {
+    gap: var(--space-sm);
+  }
+
+  .char-btn {
+    padding: clamp(10px, 4vw, 20px) 4px;
+    font-size: 1.3rem;
+  }
+
   .modal {
-    padding: 40px 32px;
-    min-width: unset;
-    width: 90vw;
+    padding: clamp(20px, 7vw, 80px) clamp(14px, 6vw, 96px);
+  }
+}
+
+/* Short landscape phones — reduce vertical bulk so nothing needs to scroll
+   under the browser chrome. */
+@media (max-height: 500px) and (orientation: landscape) {
+  body {
+    padding-block: var(--space-md);
+  }
+
+  .page-wrapper {
+    gap: var(--space-md);
+  }
+
+  .board-container {
+    gap: var(--space-sm);
+  }
+
+  .game-title {
+    font-size: clamp(1.4rem, 5vw, 2.2rem);
   }
 }
