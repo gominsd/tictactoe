@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>틱택토 놀이</title>
+  <meta name="description" content="귀여운 하늘색 테마의 틱택토 놀이 게임. 흑돌과 백돌 4개씩으로 대결하고 9회까지 기록을 저장합니다." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="page-wrapper">
+    <h1 class="game-title">틱택토 놀이</h1>
+
+    <div class="game-area">
+      <!-- 게임 보드 -->
+      <div class="board-container">
+        <div class="turn-banner" id="turn-banner">
+          <span id="turn-text">캐릭터를 골라주세요!</span>
+        </div>
+
+        <div class="stock-row">
+          <div class="stock stock-black">
+            <span class="stock-icon" id="stock-icon-black">⚫</span>
+            <span class="stock-dots" id="stock-dots-black"></span>
+          </div>
+          <div class="stock stock-white">
+            <span class="stock-icon" id="stock-icon-white">⚪</span>
+            <span class="stock-dots" id="stock-dots-white"></span>
+          </div>
+        </div>
+
+        <div class="board locked" id="board" role="grid" aria-label="틱택토 게임 보드">
+          <button class="cell" id="cell-0" aria-label="셀 1" data-index="0" disabled></button>
+          <button class="cell" id="cell-1" aria-label="셀 2" data-index="1" disabled></button>
+          <button class="cell" id="cell-2" aria-label="셀 3" data-index="2" disabled></button>
+          <button class="cell" id="cell-3" aria-label="셀 4" data-index="3" disabled></button>
+          <button class="cell" id="cell-4" aria-label="셀 5" data-index="4" disabled></button>
+          <button class="cell" id="cell-5" aria-label="셀 6" data-index="5" disabled></button>
+          <button class="cell" id="cell-6" aria-label="셀 7" data-index="6" disabled></button>
+          <button class="cell" id="cell-7" aria-label="셀 8" data-index="7" disabled></button>
+          <button class="cell" id="cell-8" aria-label="셀 9" data-index="8" disabled></button>
+        </div>
+
+        <div class="board-controls">
+          <button class="btn-reset" id="btn-reset">🔄 다시 시작</button>
+          <button class="btn-new-round" id="btn-new-round">➕ 새 회차</button>
+        </div>
+      </div>
+
+      <!-- 기록 테이블 -->
+      <div class="record-container">
+        <table class="record-table" id="record-table" aria-label="게임 기록">
+          <thead>
+            <tr>
+              <th>회차</th>
+              <th>이긴 사람</th>
+            </tr>
+          </thead>
+          <tbody id="record-body">
+          </tbody>
+        </table>
+
+        <div class="score-board">
+          <div class="score-item">
+            <span class="score-symbol" id="score-symbol-black">⚫</span>
+            <span class="score-label" id="score-label-black">흑돌</span>
+            <span class="score-num" id="score-num-black">0</span>
+          </div>
+          <div class="score-divider">VS</div>
+          <div class="score-item">
+            <span class="score-symbol" id="score-symbol-white">⚪</span>
+            <span class="score-label" id="score-label-white">백돌</span>
+            <span class="score-num" id="score-num-white">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 결과 모달 -->
+    <div class="modal-overlay hidden" id="modal-overlay" aria-modal="true" role="dialog" aria-labelledby="modal-title">
+      <div class="modal">
+        <div class="modal-icon" id="modal-icon"></div>
+        <h2 class="modal-title" id="modal-title"></h2>
+        <p class="modal-subtitle" id="modal-subtitle"></p>
+        <div class="modal-actions">
+          <button class="btn-modal-reset" id="btn-modal-reset">🔄 다시 하기</button>
+          <button class="btn-modal-next" id="btn-modal-next">➕ 다음 회차</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 캐릭터 선택 모달 -->
+    <div class="modal-overlay" id="setup-overlay" aria-modal="true" role="dialog" aria-labelledby="setup-title">
+      <div class="modal setup-modal">
+        <div class="modal-icon">🐾</div>
+        <h2 class="modal-title" id="setup-title">캐릭터를 골라요!</h2>
+        <p class="modal-subtitle">서로 다른 캐릭터를 골라주세요</p>
+
+        <p class="setup-sub">플레이어 1 (⚫ 흑돌 4개)</p>
+        <div class="char-row" id="char-row-black">
+          <button class="char-btn" data-char="rabbit" data-owner="black">🐰<span>토끼</span></button>
+          <button class="char-btn" data-char="dog" data-owner="black">🐶<span>강아지</span></button>
+          <button class="char-btn" data-char="cat" data-owner="black">🐱<span>고양이</span></button>
+          <button class="char-btn" data-char="bear" data-owner="black">🐻<span>곰</span></button>
+        </div>
+
+        <p class="setup-sub">플레이어 2 (⚪ 백돌 4개)</p>
+        <div class="char-row" id="char-row-white">
+          <button class="char-btn" data-char="rabbit" data-owner="white">🐰<span>토끼</span></button>
+          <button class="char-btn" data-char="dog" data-owner="white">🐶<span>강아지</span></button>
+          <button class="char-btn" data-char="cat" data-owner="white">🐱<span>고양이</span></button>
+          <button class="char-btn" data-char="bear" data-owner="white">🐻<span>곰</span></button>
+        </div>
+
+        <button class="btn-setup-start" id="btn-setup-start" disabled>게임 시작!</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
